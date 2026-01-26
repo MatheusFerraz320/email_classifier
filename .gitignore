@@ -1,1 +1,33 @@
+# -------- Python --------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# -------- Virtual env --------
+venv/
 .env
+.env.*
+
+# -------- IDE / Editor --------
+.vscode/
+.idea/
+
+# -------- OS --------
+.DS_Store
+Thumbs.db
+
+# -------- Logs --------
+*.log
+
+# -------- Build / cache --------
+dist/
+build/
+*.egg-info/
+
+# -------- Notebooks --------
+.ipynb_checkpoints/
+
+# -------- Coverage / tests --------
+.coverage
+htmlcov/
