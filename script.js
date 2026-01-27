@@ -1,3 +1,9 @@
+//redirect demo
+const btnDemo = document.getElementById("btnDemo");
+btnDemo.addEventListener("click", () => {
+  location.hash = "#demo";
+});
+
 //limpar campo
 const btnClear = document.getElementById("btnClear");
 btnClear.addEventListener("click", () => {
