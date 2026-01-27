@@ -1,0 +1,29 @@
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeScale {
+  from { opacity: 0; transform: scale(0.975); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+
+.reveal {
+  opacity: 0;
+  animation: fadeUp 700ms ease-out forwards;
+  will-change: transform, opacity;
+}
+
+.reveal-scale {
+  opacity: 0;
+  animation: fadeScale 650ms ease-out forwards;
+  will-change: transform, opacity;
+}
+
+
+.d-1 { animation-delay: 80ms; }
+.d-2 { animation-delay: 160ms; }
+.d-3 { animation-delay: 240ms; }
+.d-4 { animation-delay: 320ms; }
+.d-5 { animation-delay: 400ms; }
