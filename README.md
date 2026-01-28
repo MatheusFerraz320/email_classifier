@@ -70,3 +70,36 @@ API responsável pelas validações, regras de negócio e classificação de e-m
 URL da API
 https://email-classifierb.onrender.com
 
+
+# Rodar localmente
+
+# Clone o projeto
+git clone https://github.com/MatheusFerraz320/email_classifier
+cd email_classifier
+
+# Crie o ambiente virtual
+python -m venv venv
+
+# Ative o ambiente virtual
+# Linux/macOS:
+source venv/bin/activate
+# Windows (CMD):
+venv\Scripts\activate
+# Windows (PowerShell):
+venv\Scripts\Activate.ps1
+
+# Instale as dependências
+pip install -r backend/requirements.txt
+
+# Configure variáveis de ambiente
+# Crie um arquivo backend/.env com suas chaves:
+HF_TOKEN=seu_token_aqui
+OPENAI_API_KEY=seu_token_aqui
+
+# Rode o backend (a partir da raiz do projeto)
+uvicorn backend.main:app --reload
+
+# Acesse a documentação
+http://127.0.0.1:8000/docs
+
+
