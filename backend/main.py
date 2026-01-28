@@ -21,6 +21,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "https://email-classifier-r72l.onrender.com/"
         "http://localhost:5500",
         "http://127.0.0.1:5500",
         "http://localhost:5173",

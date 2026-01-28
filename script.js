@@ -1,5 +1,5 @@
 // API do server
-const API_URL = "http://localhost:8000";
+const API_BASE = window.API_BASE || "http://localhost:8000";
 
 
 function setStatus(text, dotClass = "bg-slate-400") {
@@ -184,7 +184,7 @@ async function analyzeEmail() {
       textToSend = extracted;
     }
 
-    const response = await fetch(`${API_URL}/analyze`, {
+    const response = await fetch(`${API_BASE}/analyze`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
