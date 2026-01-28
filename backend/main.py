@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Literal, Tuple
 import os
@@ -9,15 +10,31 @@ from collections import Counter
 
 load_dotenv()
 
-HF_TOKEN = os.getenv("HF_TOKEN")
-HF_MODEL = os.getenv("HF_MODEL") or "joeddav/xlm-roberta-large-xnli"
-HF_URL = f"https://router.huggingface.co/hf-inference/models/{HF_MODEL}"
 
 app = FastAPI(
     title="Classificador de E-mails",
-    description="Classifica emails com IA (Hugging Face) em produtivo ou improdutivo e sugere resposta automática",
+    description="Classifica emails com IA (Hugging Face)",
     version="1.0.0",
 )
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+load_dotenv()
+
+HF_TOKEN = os.getenv("HF_TOKEN")
+HF_MODEL = os.getenv("HF_MODEL") or "joeddav/xlm-roberta-large-xnli"
+HF_URL = f"https://router.huggingface.co/hf-inference/models/{HF_MODEL}"
 
 class AnalyzeRequest(BaseModel):
     text: str = Field(..., min_length=1, description="Texto do email")
@@ -81,10 +98,10 @@ def _parse_zero_shot_response(data) -> Tuple[str, float]:
 def _is_gibberish(text: str) -> Tuple[bool, str]:
     clean = " ".join(text.split()).strip()
     if len(clean) < MIN_TOTAL_CHARS:
-        return True, f"Texto muito curto (len<{MIN_TOTAL_CHARS})."
+        return True, f"Texto muito curto para analise"
     alpha = re.findall(r"[A-Za-zÀ-ÖØ-öø-ÿ]", clean)
     if len(alpha) < MIN_ALPHA_CHARS:
-        return True, f"Poucas letras para análise (alpha<{MIN_ALPHA_CHARS})."
+        return True, f"Poucas letras para análise"
 
     chars = [c.lower() for c in clean if not c.isspace()]
     if chars:
@@ -94,6 +111,13 @@ def _is_gibberish(text: str) -> Tuple[bool, str]:
             return True, "Texto repetido."
 
     return False, ""
+
+def has_action_intent(text: str) -> bool:
+    t = text.lower()
+    return any(word in t for word in [
+        "agendar", "reunião", "retornar", "contato",
+        "pode", "poderia", "consegue", "gostaria", "quero"
+    ])
 
 
 def classify_with_hf(email_text: str) -> dict:
@@ -144,7 +168,10 @@ def classify_with_hf(email_text: str) -> dict:
 
     
     if confidence < THRESHOLD:
-        category = "improdutivo"
+        if category == "produtivo" and has_action_intent(clean):
+            pass  
+        else:
+            category = "improdutivo"
 
     return {
         "category": category,

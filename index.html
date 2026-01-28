@@ -303,15 +303,10 @@
                       id="pdfPreview"
                       class="min-h-[110px] whitespace-pre-wrap rounded-xl border border-white/10 bg-slate-950/40 p-3 text-xs text-slate-300"
                     >
-                      Assim que seu JS extrair o texto do PDF, pode mostrar um trecho aqui…
+                      Assim que seu texto for extraido, mostrará um trecho aqui.
                     </div>
                   </div>
                 </div>
-
-                <p class="mt-3 text-xs text-slate-400">
-                  Obs: o backend atual recebe texto. No modo PDF, seu JS deve extrair o texto do PDF e enviar como
-                  <code class="text-slate-200">{&quot;text&quot;: &quot;...&quot;}</code>.
-                </p>
               </div>
             </section>
 
@@ -423,10 +418,6 @@
                 </div>
               </div>
             </div>
-
-            <p class="mt-4 text-xs text-slate-400">
-              Próximo passo: animações de layout (tabs, cards, loading), feedback melhor no upload de PDF.
-            </p>
           </div>
         </div>
       </section>
@@ -439,10 +430,10 @@
                  transition-transform duration-200 ease-out will-change-transform
                  reveal d-1"
         >
-          <p class="text-sm text-slate-300">1) Escolha Texto ou PDF</p>
+          <p class="text-sm text-slate-300">1) Escolha Texto , TXT ou PDF</p>
           <h4 class="mt-1 font-semibold">Entrada</h4>
           <p class="mt-2 text-sm text-slate-400">
-            Texto vai direto. PDF você extrai no front e envia como texto.
+            Texto vai direto, PDF sera extraido como via PDFjs e enviado como texto.
           </p>
         </div>
 
@@ -455,7 +446,13 @@
           <p class="text-sm text-slate-300">2) Backend analisa</p>
           <h4 class="mt-1 font-semibold">Processamento</h4>
           <p class="mt-2 text-sm text-slate-400">
-            A API retorna categoria e score de confiança.
+            O backend recebe o texto via POST 
+            e aplica regras de validação. 
+            Em seguida, utiliza um 
+            modelo de NLP em abordagem de classificação 
+            zero-shot para interpretar o conteúdo do email. Por fim, 
+            regras orientadas pela saída da IA auxiliam na decisão final,
+             retornando a categoria e o score de confiança.
           </p>
         </div>
 
@@ -505,15 +502,16 @@
             >
               <p class="mb-2 text-sm font-semibold text-slate-200">Response</p>
               <pre class="whitespace-pre-wrap text-xs text-slate-200">{
-  "category": "produtivo",
-  "confidence": 0.87,
-  "suggested_reply": "...",
-  "reason": "..."
+    "category": "produtivo","improdutivo",
+    "confidence": 0.87,
+    "suggested_reply": "...",
+    "reason": "..."
 }</pre>
             </div>
           </div>
         </div>
       </section>
+      
       <!-- DEMO -->
 <section id="demo" class="mt-12">
   <div
@@ -602,7 +600,7 @@
           preload="metadata"
           poster="./poster-demo.jpg"
         >
-          <source src="./demo.mp4" type="video/mp4" />
+          <source src="./video/demo.mp4" type="video/mp4" />
           Seu navegador não suporta vídeo HTML5.
         </video>
 
@@ -627,7 +625,7 @@
           <li class="flex gap-3">
             <span class="grid h-8 w-8 place-items-center rounded-2xl border border-white/10 bg-slate-950/30">1</span>
             <div>
-              <p class="font-medium text-slate-200">Selecionar PDF</p>
+              <p class="font-medium text-slate-200">Selecionar PDF ou Inserir Texto</p>
               <p class="text-slate-400">Upload + confirmação visual do arquivo.</p>
             </div>
           </li>
@@ -652,7 +650,7 @@
         <div class="mt-5 rounded-2xl border border-white/10 bg-slate-950/30 p-4">
           <p class="text-xs text-slate-400">Observação</p>
           <p class="mt-1 text-sm text-slate-300">
-            PDFs escaneados (imagem) podem não conter texto detectável. Nesses casos, a aplicação exibe um aviso.
+            PDFs escaneados (imagem) podem não conter texto detectável.
           </p>
         </div>
       </div>
