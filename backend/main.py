@@ -31,15 +31,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-load_dotenv()
+
 
 ## HUGGINGFACE
 HF_TOKEN = os.getenv("HF_TOKEN")
 HF_MODEL = os.getenv("HF_MODEL") or "joeddav/xlm-roberta-large-xnli"
 HF_URL = f"https://router.huggingface.co/hf-inference/models/{HF_MODEL}"
 
-
-## MODELO MODELO DA REQUEST QUE TEM QUE SER RECEBIDA
+## MODELO DA REQUEST QUE TEM QUE SER RECEBIDA
 class AnalyzeRequest(BaseModel):
     text: str = Field(..., min_length=1, description="Texto do email")
 
@@ -83,7 +82,6 @@ def _hf_headers() -> dict:
 
 
 ## FUNÇÂO PARA PEGAR OS VALORES DO MODELO
-
 def _parse_zero_shot_response(data) -> Tuple[str, float]:
     if not (isinstance(data, dict) and "labels" in data and "scores" in data):
         raise ValueError(f"Formato inesperado: {str(data)[:300]}")
@@ -105,7 +103,6 @@ def _parse_zero_shot_response(data) -> Tuple[str, float]:
 
 
 ## FUNÇÂO PARA VALIDAÇÂO DE CARACTERES
-
 def _is_gibberish(text: str) -> Tuple[bool, str]:
     clean = " ".join(text.split()).strip()
     if len(clean) < MIN_TOTAL_CHARS:
@@ -131,10 +128,11 @@ def has_action_intent(text: str) -> bool:
         "pode", "poderia", "consegue", "gostaria", "quero"
     ])
 
-## CLASSIFICAÇÂO COM HUGGINGFACE
+## CLASSIFICAÇÂO COM HUGGINGFACE CLASSIFICA => DECIDE => RESPONDE
 def classify_with_hf(email_text: str) -> dict:
     clean = " ".join(email_text.split()).strip()
 
+    ## VALIDAÇÃO DE CARACTERES SE FOR GIBBERISH RETORNA IMPRODUTIVO SEM GASTAR IA
     gib, reason = _is_gibberish(clean)
     if gib:
         category = "improdutivo"
@@ -145,6 +143,7 @@ def classify_with_hf(email_text: str) -> dict:
             "reason": f"Regra: {reason}",
         }
 
+    ## CHAMA HF
     payload = {
         "inputs": clean,
         "parameters": {
@@ -178,6 +177,8 @@ def classify_with_hf(email_text: str) -> dict:
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Resposta inesperada HF: {str(e)} | data={str(data)[:300]}")
 
+    ## SE A CONFIDENCIA FOR MENOR QUE O THRESHOLD ELE VERIFICA SE TEM INTENÇÃO DE AÇÃO 
+    #SE NÃO TIVER ELE MUDA PARA IMPRODUTIVO
     
     if confidence < THRESHOLD:
         if category == "produtivo" and has_action_intent(clean):
