@@ -27,3 +27,56 @@
 .d-3 { animation-delay: 240ms; }
 .d-4 { animation-delay: 320ms; }
 .d-5 { animation-delay: 400ms; }
+
+.ai-reply-pulse{
+  position: relative;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255,255,255,.14);
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,.06),
+    rgba(255,255,255,.02)
+  );
+
+  animation: aiPulse 2.4s ease-in-out infinite;
+}
+
+.ai-reply-pulse::after{
+  content:"";
+  position:absolute;
+  inset:-10px;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle,
+    rgba(99,102,241,.18),
+    transparent 60%
+  );
+  opacity: 0;
+  pointer-events: none;
+  animation: aiGlow 2.4s ease-in-out infinite;
+}
+
+@keyframes aiPulse{
+  0%,100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+  }
+  50% {
+    transform: scale(1.015);
+    box-shadow: 0 0 28px rgba(99,102,241,.22);
+  }
+}
+
+@keyframes aiGlow{
+  0%,100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+
+@media (prefers-reduced-motion: reduce){
+  .ai-reply-pulse,
+  .ai-reply-pulse::after{
+    animation: none;
+  }
+}

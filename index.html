@@ -37,9 +37,10 @@
       <div class="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-950 to-slate-900/30"></div>
     </div>
 
-    <!-- HEADER (sem animação: fica mais premium e não “pula” por ser sticky) -->
+    <!-- HEADER -->
     <header class="sticky top-0 z-20 border-b border-white/10 bg-slate-950/70 backdrop-blur">
       <div class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-4">
+        
         <!-- Brand -->
         <div class="flex items-center gap-3">
           <div class="grid h-10 w-10 place-items-center rounded-2xl border border-white/10 bg-white/10">
@@ -123,7 +124,7 @@
           </h2>
 
           <p class="leading-relaxed text-slate-300">
-            Escolha o modo de entrada, envie para o backend e visualize categoria, confiança e resposta sugerida.
+            Aumente a produtividade com IA, classificando e-mails produtivos e improdutivos.
           </p>
 
           <div class="flex flex-wrap gap-3">
@@ -149,6 +150,7 @@
                      transition-transform duration-200 ease-out will-change-transform"
             >
               <span>🧾</span> PDF
+              <span>🧾</span> TXT
             </div>
           </div>
 
@@ -174,20 +176,11 @@
         >
           <div class="flex items-start justify-between gap-4">
             <div>
-              <h3 class="text-lg font-semibold">Entrada</h3>
+              <h3 class="text-lg font-semibold">Entrada de dados</h3>
               <p class="text-sm text-slate-300">
-                Escolha <strong>Texto</strong> ou <strong>PDF</strong> para analisar.
+                Escolha <strong>Texto</strong> ou <strong>PDF ou TXT</strong> para analisar.
               </p>
             </div>
-
-            <span
-              class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/30 px-3 py-1.5 text-xs text-slate-300
-                     hover:bg-white/5 hover:scale-105
-                     transition-transform duration-200 ease-out will-change-transform"
-            >
-              <span>POST</span>
-              <code class="text-slate-200">/analyze</code>
-            </span>
           </div>
 
           <!-- Tabs -->
@@ -239,7 +232,7 @@
             <!-- PDF PANEL -->
             <section id="panelPdf" class="mt-4 hidden" data-panel="pdf">
               <label for="pdfFile" class="text-sm font-medium text-slate-200">
-                Envie um PDF (extrairemos o texto no front)
+                Envie um PDF (PDFS ESCANEADOS / IMAGENS NÃO SÂO SUPORTADOS)
               </label>
 
               <div
@@ -268,11 +261,13 @@
                            transition-transform duration-200 ease-out will-change-transform"
                   >
                     <span>📎</span>
-                    Selecionar PDF
+                    Selecionar PDF ou TXT
                   </label>
 
-                  <input id="pdfFile" name="pdfFile" type="file" accept="application/pdf" class="hidden" />
+                  <input id="pdfFile" name="pdfFile" type="file" accept=".pdf, .txt, application/pdf, text/plain" class="hidden" />
                 </div>
+
+                  
 
                 <!-- file meta -->
                 <div class="mt-4 grid gap-2">
@@ -414,7 +409,11 @@
                          hover:bg-white/10 hover:scale-[1.01]
                          transition-transform duration-200 ease-out will-change-transform"
                 >
-                  <pre id="replyText" class="whitespace-pre-wrap text-sm leading-relaxed text-slate-200"></pre>
+                  <pre
+                    id="replyText"
+                    class="whitespace-pre-wrap text-sm leading-relaxed text-slate-200
+                           ai-reply-pulse"
+                  ></pre>
                 </div>
               </div>
             </div>
@@ -433,7 +432,8 @@
           <p class="text-sm text-slate-300">1) Escolha Texto , TXT ou PDF</p>
           <h4 class="mt-1 font-semibold">Entrada</h4>
           <p class="mt-2 text-sm text-slate-400">
-            Texto vai direto, PDF sera extraido como via PDFjs e enviado como texto.
+            Você insere um texto, um arquivo TXT ou PDF.
+            Texto vai direto, PDF será extraido o texto com PDFjs.
           </p>
         </div>
 
@@ -478,7 +478,7 @@
                  transition-transform duration-200 ease-out will-change-transform
                  reveal d-2"
         >
-          <h3 class="text-lg font-semibold">API</h3>
+          <h3 class="text-lg font-semibold">API(fastapi) + IA Huggingface (zero-shot) + Regras</h3>
           <p class="mt-1 text-sm text-slate-300">
             Endpoint: <code class="text-slate-200">POST /analyze</code>
           </p>
@@ -490,9 +490,10 @@
                      transition-transform duration-200 ease-out will-change-transform"
             >
               <p class="mb-2 text-sm font-semibold text-slate-200">Request</p>
-              <pre class="whitespace-pre-wrap text-xs text-slate-200">{
-  "text": "Olá, preciso de um orçamento..."
-}</pre>
+              <pre class="whitespace-pre-wrap text-xs text-slate-200">
+              {
+                "text": "Olá, preciso de um orçamento..."
+              }</pre>
             </div>
 
             <div
@@ -501,12 +502,14 @@
                      transition-transform duration-200 ease-out will-change-transform"
             >
               <p class="mb-2 text-sm font-semibold text-slate-200">Response</p>
-              <pre class="whitespace-pre-wrap text-xs text-slate-200">{
-    "category": "produtivo","improdutivo",
-    "confidence": 0.87,
-    "suggested_reply": "...",
-    "reason": "..."
-}</pre>
+              <pre class="whitespace-pre-wrap text-xs text-slate-200">
+              {
+                "category": "produtivo",
+                "confidence": 0.87,
+                "suggested_reply": "...",
+                "reason": "..."
+              }
+              </pre>
             </div>
           </div>
         </div>

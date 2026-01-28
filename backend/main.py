@@ -10,14 +10,14 @@ from collections import Counter
 
 load_dotenv()
 
-
+## CONFIG
 app = FastAPI(
     title="Classificador de E-mails",
     description="Classifica emails com IA (Hugging Face)",
     version="1.0.0",
 )
 
-
+## CORS URLS 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -33,13 +33,17 @@ app.add_middleware(
 )
 load_dotenv()
 
+## HUGGINGFACE
 HF_TOKEN = os.getenv("HF_TOKEN")
 HF_MODEL = os.getenv("HF_MODEL") or "joeddav/xlm-roberta-large-xnli"
 HF_URL = f"https://router.huggingface.co/hf-inference/models/{HF_MODEL}"
 
+
+## MODELO MODELO DA REQUEST QUE TEM QUE SER RECEBIDA
 class AnalyzeRequest(BaseModel):
     text: str = Field(..., min_length=1, description="Texto do email")
 
+## MODELO DA RESPONSE QUE TEM QUE SER ENVIADA
 class AnalyzeResponse(BaseModel):
     category: Literal["produtivo", "improdutivo"] = Field(..., description="Categoria do email")
     confidence: float = Field(..., ge=0, le=1, description="Confiança (0 a 1)")
@@ -47,17 +51,18 @@ class AnalyzeResponse(BaseModel):
     reason: str = Field(..., description="Justificativa curta")
 
 
-
+## VARIAVEL DAS LABELS QUE VÃO SER USADAS NO MODELO
 CANDIDATE_LABELS = ["produtivo", "improdutivo"]
 
-
+## LIMITE NO CONDIFIDENCE
 THRESHOLD = 0.70
 
+##VARIAVEL PARA VALIDAÇÂO DE MINIMO DE CARACTERES
 MIN_ALPHA_CHARS = 10          
 MIN_TOTAL_CHARS = 15          
 MAX_SINGLE_CHAR_RATIO = 0.60  
 
-
+## TEMPLATE DE RESPOSTAS ( FUNÇÂO )
 def reply_template(category: str) -> str:
     if category == "produtivo":
         return (
@@ -70,11 +75,14 @@ def reply_template(category: str) -> str:
     )
 
 
+## FUNÇÂO PARA VALIDAÇÂO DE TOKEN
 def _hf_headers() -> dict:
     if not HF_TOKEN:
         raise HTTPException(status_code=500, detail="HF_TOKEN não configurado no .env.")
     return {"Authorization": f"Bearer {HF_TOKEN}"}
 
+
+## FUNÇÂO PARA PEGAR OS VALORES DO MODELO
 
 def _parse_zero_shot_response(data) -> Tuple[str, float]:
     if not (isinstance(data, dict) and "labels" in data and "scores" in data):
@@ -96,6 +104,8 @@ def _parse_zero_shot_response(data) -> Tuple[str, float]:
     return top_label, top_score
 
 
+## FUNÇÂO PARA VALIDAÇÂO DE CARACTERES
+
 def _is_gibberish(text: str) -> Tuple[bool, str]:
     clean = " ".join(text.split()).strip()
     if len(clean) < MIN_TOTAL_CHARS:
@@ -113,6 +123,8 @@ def _is_gibberish(text: str) -> Tuple[bool, str]:
 
     return False, ""
 
+## PALAVRAS CHAVES PARA RETORNO DE PRODUTIVO
+
 def has_action_intent(text: str) -> bool:
     t = text.lower()
     return any(word in t for word in [
@@ -120,7 +132,7 @@ def has_action_intent(text: str) -> bool:
         "pode", "poderia", "consegue", "gostaria", "quero"
     ])
 
-
+## CLASSIFICAÇÂO COM HUGGINGFACE
 def classify_with_hf(email_text: str) -> dict:
     clean = " ".join(email_text.split()).strip()
 
@@ -181,7 +193,7 @@ def classify_with_hf(email_text: str) -> dict:
         "reason": f"Zero-shot HF ({HF_MODEL}). confidence={confidence:.3f} (threshold={THRESHOLD}).",
     }
 
-
+## ENDPOINTS
 @app.get("/health", summary="Healthcheck")
 def health():
     return {"status": "ok", "model": HF_MODEL, "threshold": THRESHOLD}
