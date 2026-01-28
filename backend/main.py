@@ -124,7 +124,6 @@ def _is_gibberish(text: str) -> Tuple[bool, str]:
     return False, ""
 
 ## PALAVRAS CHAVES PARA RETORNO DE PRODUTIVO
-
 def has_action_intent(text: str) -> bool:
     t = text.lower()
     return any(word in t for word in [
